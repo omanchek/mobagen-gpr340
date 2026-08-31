@@ -7,6 +7,15 @@ glm::vec2 AlignmentRule::computeForce(const std::vector<BoidView>& neighborhood,
 
   // begin solution
 
+  //edge case for no neighbors
+  if (neighborhood.size() <= 0) return averageVelocity;
+
+  //average the velocity of neighborhood
+  for (int i = 0; i < neighborhood.size(); i++)
+  {
+    averageVelocity += neighborhood[i].velocity;
+  }
+  averageVelocity = averageVelocity / static_cast<float>(neighborhood.size());
 
   return averageVelocity;
   // end solution

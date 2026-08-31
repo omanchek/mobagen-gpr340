@@ -9,6 +9,19 @@ glm::vec2 CohesionRule::computeForce(const std::vector<BoidView>& neighborhood, 
 
   // begin solution
 
+  //edge case for no neighbors
+  if (neighborhood.size() <= 0) return cohesionForce;
+
+  //calculate the center of mass of the neighborhood
+  glm::vec2 centerOfMass = glm::vec2();
+  for (int i = 0; i < neighborhood.size(); i++)
+  {
+    centerOfMass += neighborhood[i].position;
+  }
+  centerOfMass = centerOfMass / static_cast<float>(neighborhood.size());
+
+  //get the cohesion force to use
+  cohesionForce = centerOfMass - boid.position;
 
   // end solution
 
