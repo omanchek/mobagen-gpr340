@@ -24,6 +24,11 @@ glm::vec2 CohesionRule::computeForce(const std::vector<BoidView>& neighborhood, 
   cohesionForce = (centerOfMass - boid.position) / 35.0f;
 
   // end solution
+<<<<<<< Updated upstream
   
   return cohesionForce * weight;
+=======
+
+  return glm::normalize(cohesionForce);
+>>>>>>> Stashed changes
 }

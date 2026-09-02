@@ -15,6 +15,8 @@ glm::vec2 AlignmentRule::computeForce(const std::vector<BoidView>& neighborhood,
   {
     averageVelocity += neighborhood[i].velocity;
   }
+
+  //add in this boid's velocity, and determine average
   averageVelocity = averageVelocity / static_cast<float>(neighborhood.size());
 
   return averageVelocity;
