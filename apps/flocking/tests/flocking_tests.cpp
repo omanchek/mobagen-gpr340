@@ -183,6 +183,9 @@ bool fixturePasses(const FixtureFiles& fixture) {
     input = normalizeLineEndings(input);
     expectedOutput = trim(normalizeLineEndings(expectedOutput));
 
+    std::cout << "EXPECTED: " << std::endl << "-----------------" << std::endl << expectedOutput << std::endl << std::endl;
+    std::cout << "ACTUAL: " << std::endl << "-----------------" << std::endl << runFlockingSimulation(input) << std::endl << std::endl;
+
     passed = compareOutputs(runFlockingSimulation(input), expectedOutput, 1e-3);
   }
 

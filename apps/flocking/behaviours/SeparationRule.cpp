@@ -22,10 +22,13 @@ glm::vec2 SeparationRule::computeForce(const std::vector<BoidView>& neighborhood
   {
     direction = boid.position - neighborhood[i].position;
     distance = glm::length(direction);
-    separatingForce += direction * (desiredMinimalDistance / (distance * distance));
+    if (distance > ZERO_EDGE_CASE_CHECK)
+    {
+      separatingForce += glm::normalize(direction) * (desiredMinimalDistance / distance);
+    }
   }
 
-
+  
   // end solution
 
   return separatingForce;
