@@ -16,7 +16,7 @@ class FlockingRule {
 protected:
   Color32 debugColor;
 
-  const float ZERO_EDGE_CASE_CHECK = 0.0001f;
+  const float EPSILON = 0.0001f;
 
   explicit FlockingRule(Color32 debugColor_, float weight_, bool isEnabled_ = true)
       : debugColor(debugColor_), weight(weight_), isEnabled(isEnabled_) {}

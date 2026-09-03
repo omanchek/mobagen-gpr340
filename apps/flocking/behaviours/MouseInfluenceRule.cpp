@@ -1,5 +1,6 @@
 #include "MouseInfluenceRule.h"
 #include "imgui.h"
+#include <iostream>
 
 glm::vec2 MouseInfluenceRule::computeForce(const std::vector<BoidView>& neighborhood, const BoidView& boid) {
   glm::vec2 force(0.f);
@@ -10,7 +11,26 @@ glm::vec2 MouseInfluenceRule::computeForce(const std::vector<BoidView>& neighbor
 
   // begin solution
 
+  if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
+  {
+    glm::vec2 mousePos = glm::vec2(ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
+
+      if (isRepulsive)
+      {
+        force = boid.position - mousePos;
+      }
+      else
+      {
+        force = mousePos - boid.position;
+      }
+  }
+
   // end solution
+
+  if (glm::length(force) > EPSILON)
+  {
+    force = glm::normalize(force);
+  }
 
   return force;
 }

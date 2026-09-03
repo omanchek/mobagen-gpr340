@@ -22,7 +22,7 @@ glm::vec2 CohesionRule::computeForce(const std::vector<BoidView>& neighborhood, 
 
   //get the cohesion force to use
   cohesionForce = centerOfMass - boid.position;
-  if (glm::length(cohesionForce) > ZERO_EDGE_CASE_CHECK)
+  if (glm::length(cohesionForce) > EPSILON)
   {
     cohesionForce = glm::normalize(cohesionForce);
   }
