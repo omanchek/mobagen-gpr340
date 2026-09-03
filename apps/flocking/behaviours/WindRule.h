@@ -5,6 +5,7 @@
 
 class WindRule : public FlockingRule {
 private:
+  const float PI = 3.1415f;
   float windAngle;
 
 public:
