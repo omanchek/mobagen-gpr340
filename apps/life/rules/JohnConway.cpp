@@ -46,7 +46,7 @@ public:
     // todo: implement the reproduction condition
     //throw std::logic_error("Reproduction condition not implemented yet");
 
-    return context.aliveNeighbors > 1 && context.aliveNeighbors < 3;
+    return context.aliveNeighbors == 3;
   }
 };
 
@@ -107,10 +107,9 @@ JohnConway::JohnConway() {
 
   alive->AddTransition(std::make_shared<Underpopulation>(), dead, {die});
   dead->AddTransition(std::make_shared<Reproduction>(), alive, {born});
+  alive->AddTransition(std::make_shared<Overpopulation>(), dead, {die});
   dead->AddAction(std::make_shared<StayDeadAction>());
-  dead->AddAction(std::make_shared<BornAction>());
   alive->AddAction(std::make_shared<StayAliveAction>());
-  alive->AddAction(std::make_shared<DieAction>());
 
   // begin solution
   // note: log instead of throw - the constructor runs at app startup and at
@@ -152,8 +151,19 @@ int JohnConway::CountNeighbors(World& world, Point2D point) {
 
   //throw std::logic_error("CountNeighbors not implemented yet");
 
-  //if (world.Get({point.x + 1, point.y + 1}))
+  int alive = 0;
 
-  return 0;
+  //count up neighbors
+  if (world.Get({point.x + -1, point.y + 1})) alive++;
+  if (world.Get({point.x + 0, point.y + 1})) alive++;
+  if (world.Get({point.x + 1, point.y + 1})) alive++;
+  if (world.Get({point.x + -1, point.y + 0})) alive++;
+  if (world.Get({point.x + 1, point.y + 0})) alive++;
+  if (world.Get({point.x + -1, point.y + -1})) alive++;
+  if (world.Get({point.x + 0, point.y + -1})) alive++;
+  if (world.Get({point.x + 1, point.y + -1})) alive++;
+
+
+  return alive;
   // end solution
 }
