@@ -1,6 +1,30 @@
 #include "Catcher.h"
 #include "World.h"
 
+WorldEdges getGoalEdge(const Point2D& goal, CatWorld* world)
+{ 
+  //get half size
+  auto side = world->getWorldSideSize() / 2;
+  
+  //determine which edge the given goal is on
+  if (goal.x == -1 * side) return WorldEdges::LEFT;
+  else if (goal.x == side) return WorldEdges::RIGHT;
+  else if (goal.y == -1 * side) return WorldEdges::UP;
+  else return WorldEdges::DOWN;
+}
+
+float calculateHeuristic(const Point2D& pos, CatWorld* world)
+{
+  //get half size
+  auto side = world -> getWorldSideSize() / 2;
+  auto cat = world->getCat();
+
+  int offsetFactor = (world->getWorldSideSize() - (std::abs(pos.x - cat.x) + std::abs(pos.y - cat.y))) - 1;
+  float urgencyScalar = (getMinDistanceToEdge(pos, world) - 1) / (float)side;
+
+  return offsetFactor * urgencyScalar * 0.25f;
+}
+
 Point2D Catcher::Move(CatWorld* world) {
   //store base vars
   auto side = world->getWorldSideSize() / 2;
@@ -41,8 +65,11 @@ Point2D Catcher::Move(CatWorld* world) {
       // skip if invalid
       if (world->getContent(next)) continue;
 
+      //skip if cat
+      if (world->getCat() == next) continue;
+
       // calculate new cost
-      newCost = costSoFar[current] + 1.0f; //+ edgeHeuristic(current, world);
+      newCost = costSoFar[current] + 1.0f + calculateHeuristic(next, world);
 
       // first case, if cell has never been visited, add it to cost list
       if (!costSoFar.contains(next)) {
@@ -63,10 +90,6 @@ Point2D Catcher::Move(CatWorld* world) {
     if (debugEscape >= 1000) std::cout << "debug escape" << std::endl;
   }
 
-  // compose the path
-  Point2D iterator;
-  std::vector<Point2D> path = std::vector<Point2D>();
-
-  // backwards trace to generate the path
+  //return guessed destination
   return dest;
 }

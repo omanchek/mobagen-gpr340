@@ -7,6 +7,16 @@
 #include <unordered_map>
 #include <vector>
 
+class CatWorld;
+
+enum class WorldEdges
+{
+    UP = 0,
+    DOWN = 1,
+    LEFT = 2,
+    RIGHT = 3
+};
+
 // Point2D is now glm::ivec2 — same x,y interface, no OOP wrapper needed.
 using Point2D = glm::ivec2;
 
@@ -26,6 +36,8 @@ using DjikstraQueue = std::priority_queue<WeightCell, std::vector<WeightCell>, s
 using CameFrom = std::unordered_map<Point2D, Point2D>;
 using CostSoFar = std::unordered_map<Point2D, float>;
 
+int getMinDistanceToEdge(const Point2D& pos, CatWorld* world);
+
 // Hash specialization so Point2D (= glm::ivec2) works in unordered containers.
 namespace std {
   template <> struct hash<glm::ivec2> {
@@ -37,7 +49,7 @@ namespace std {
   };
 }  // namespace std
 
-class CatWorld;
+
 
 class Agent {
 public:

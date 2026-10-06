@@ -35,3 +35,26 @@ std::vector<Point2D> Agent::generatePath(CatWorld* w) {
   // if your vector is filled from the border to the cat, the first element is the catcher move, and the last element is the cat move
   return vector<Point2D>();
 }
+
+int getMinDistanceToEdge(const Point2D& pos, CatWorld* world)
+{
+  // create an array of the edges
+  const unsigned int EDGE_COUNT = 4;
+  int size = world->getWorldSideSize() / 2;
+  int edges[EDGE_COUNT];  // up, down, left, right
+  
+  //get distances to each edge
+  edges[(int)WorldEdges::UP] = std::abs((-1 * size) - pos.y);
+  edges[(int)WorldEdges::DOWN] = std::abs((size)-pos.y);
+  edges[(int)WorldEdges::LEFT] = std::abs((-1 * size) - pos.x);
+  edges[(int)WorldEdges::RIGHT] = std::abs((size)-pos.x);
+
+  //find min
+  int min = 0;
+  for (int i = 0; i < EDGE_COUNT; i++)
+  {
+    if (edges[i] < edges[min]) min = i;
+  }
+
+  return min;
+}

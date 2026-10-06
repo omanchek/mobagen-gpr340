@@ -7,13 +7,13 @@ float edgeHeuristic(const Point2D& pos, CatWorld* world)
 {
   //declare an array to get distances to edges
   float distances[4]; //up, down, left, right
-  int size = world->getWorldSideSize();
+  int size = world->getWorldSideSize() / 2;
   
   //get distances to each edge
-  distances[0] = std::abs((-1 * size) - pos.y);
-  distances[1] = std::abs((size) - pos.y);
-  distances[2] = std::abs((-1 * size) - pos.x);
-  distances[3] = std::abs((size)-pos.x);
+  distances[(int)WorldEdges::UP] = std::abs((-1 * size) - pos.y);
+  distances[(int)WorldEdges::DOWN] = std::abs((size) - pos.y);
+  distances[(int)WorldEdges::LEFT] = std::abs((-1 * size) - pos.x);
+  distances[(int)WorldEdges::RIGHT] = std::abs((size)-pos.x);
 
   //pick smallest edge distance
   int min = 0;
@@ -82,7 +82,7 @@ Point2D Cat::Move(CatWorld* world)
         if (world->getContent(next)) continue;
 
         //calculate new cost
-        newCost = costSoFar[current] + 1.0f + edgeHeuristic(current, world);
+        newCost = costSoFar[current] + 1.0f + edgeHeuristic(next, world);
 
         //first case, if cell has never been visited, add it to cost list
         if (!costSoFar.contains(next)) {
