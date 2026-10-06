@@ -13,17 +13,27 @@ WorldEdges getGoalEdge(const Point2D& goal, CatWorld* world)
   else return WorldEdges::DOWN;
 }
 
-float calculateHeuristic(const Point2D& pos, CatWorld* world)
+float calculateHeuristic(const Point2D& pos, CatWorld* world, float distScalar = 1.0f, float blockedScalar = 2.0f)
 {
-  //get half size
-  auto side = world -> getWorldSideSize() / 2;
+  //get the cat's position
   auto cat = world->getCat();
+  auto side = world->getWorldSideSize() / 2;
 
-  int offsetFactor = std::abs((side / 2)- (std::abs(pos.x - cat.x) + std::abs(pos.y - cat.y)));
-  offsetFactor = std::min(std::max(0, offsetFactor), side);
-  float urgencyScalar = (getMinDistanceToEdge(pos, world) - 1) / (float)side;
+  //determine the minimum distance from the cat and the pos to an edge
+  int posMin = side - std::max(std::abs(pos.x - cat.x), std::abs(pos.y - cat.y));//getMinDistanceToEdge(pos, world);
+  int catMin = getMinDistanceToEdge(cat, world) - 1;
 
-  return 0;//offsetFactor * urgencyScalar * 0.25f;
+  int distProduct = std::max(0, catMin) + std::max(0, posMin);
+
+  int blockedNeighbors = 1;
+  for (Point2D it : world->neighbors(pos))
+  {
+    if (!world->isValidPosition(it)) continue;
+
+    if (world->getContent(pos)) blockedNeighbors++;
+  }
+
+  return ((distProduct * distScalar) + (std::pow(blockedNeighbors, 2) * blockedScalar)) * std::max(0, (catMin));
 }
 
 Point2D Catcher::Move(CatWorld* world) {
@@ -70,7 +80,8 @@ Point2D Catcher::Move(CatWorld* world) {
       if (world->getCat() == next) continue;
 
       // calculate new cost
-      newCost = costSoFar[current] + 1.0f + calculateHeuristic(next, world);
+      newCost = std::max(0.0f, costSoFar[current] + 1.0f + calculateHeuristic(next, world));
+      //std::cout << (std::abs(costSoFar[current] - calculateHeuristic(next, world))) << std::endl;
 
       // first case, if cell has never been visited, add it to cost list
       if (!costSoFar.contains(next)) {
@@ -99,10 +110,5 @@ Point2D Catcher::Move(CatWorld* world) {
     iterator = cameFrom[iterator];
   }
 
-  //pick point on path based on distance from edge
-  float pathFraction = (float)(getMinDistanceToEdge(cat, world) - 3) / (float)side;
-  float clampedFraction = std::min(std::max(0.0f, pathFraction), 0.5f);
-
-
-  return path.at(std::floor((pathFraction * clampedFraction) * (path.size() - 1)));
+  return path.at(0);
 }
