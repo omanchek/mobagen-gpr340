@@ -13,7 +13,7 @@ WorldEdges getGoalEdge(const Point2D& goal, CatWorld* world)
   else return WorldEdges::DOWN;
 }
 
-float calculateHeuristic(const Point2D& pos, CatWorld* world, float distScalar = 1.0f, float blockedScalar = 2.0f)
+float calculateHeuristic(const Point2D& pos, CatWorld* world, float distScalar = 1.0f, float blockedScalar = 3.0f)
 {
   //get the cat's position
   auto cat = world->getCat();
@@ -30,7 +30,7 @@ float calculateHeuristic(const Point2D& pos, CatWorld* world, float distScalar =
   {
     if (!world->isValidPosition(it)) continue;
 
-    if (world->getContent(pos)) blockedNeighbors++;
+    if (world->getContent(it)) blockedNeighbors++;
   }
 
   return ((distProduct * distScalar) + (std::pow(blockedNeighbors, 2) * blockedScalar)) * std::max(0, (catMin));
