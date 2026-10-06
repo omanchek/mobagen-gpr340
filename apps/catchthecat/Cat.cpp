@@ -57,21 +57,22 @@ float edgeHeuristic(const Point2D& pos, CatWorld* world)
 }
 
 
-Point2D Cat::Move(CatWorld* world) {
-  auto rand = Random::Range(0, 5);
+Point2D Cat::Move(CatWorld* world)
+{
+  //store current cat position
   auto pos = world->getCat();
-
-  std::cout << pos.x << pos.y << std::endl;
-  
+    
   //initial setup
   DjikstraQueue frontier = DjikstraQueue();
   
+  //setup initial state for pathfinding
   frontier.push(WeightCell(0.0f, pos));
   CameFrom cameFrom = CameFrom();
   CostSoFar costSoFar = CostSoFar();
   cameFrom.emplace(pos, pos);
   costSoFar.emplace(pos, 0.0f);
 
+  //create interator variables for evaluation
   unsigned int debugEscape = 0;
   Point2D current, dest = pos;
   float newCost;
@@ -117,8 +118,8 @@ Point2D Cat::Move(CatWorld* world) {
         }
       }
 
+      //debug handling to guard against infinite loops
       debugEscape++;
-
       if (debugEscape >= 1000) std::cout << "debug escape" << std::endl;
   }
 
@@ -126,7 +127,7 @@ Point2D Cat::Move(CatWorld* world) {
   Point2D iterator;
   std::vector<Point2D> path = std::vector<Point2D>();
 
-  //backwards trace
+  //backwards trace to generate the path
   iterator = dest;
   while (iterator != pos)
   {
@@ -134,11 +135,9 @@ Point2D Cat::Move(CatWorld* world) {
     iterator = cameFrom[iterator];
   }
 
+  //if at goal, return the goal as point to move to
   if (path.size() <= 0) return pos;
 
-  for (int i = 0; i < path.size(); i++) {
-    std::cout << path[i].x << ", " << path[i].y << std::endl;
-  }
-
+  //otherwise, grab the next point on the path
   return path[path.size() - 1];
 }
