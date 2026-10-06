@@ -19,10 +19,11 @@ float calculateHeuristic(const Point2D& pos, CatWorld* world)
   auto side = world -> getWorldSideSize() / 2;
   auto cat = world->getCat();
 
-  int offsetFactor = (world->getWorldSideSize() - (std::abs(pos.x - cat.x) + std::abs(pos.y - cat.y))) - 1;
+  int offsetFactor = std::abs((side / 2)- (std::abs(pos.x - cat.x) + std::abs(pos.y - cat.y)));
+  offsetFactor = std::min(std::max(0, offsetFactor), side);
   float urgencyScalar = (getMinDistanceToEdge(pos, world) - 1) / (float)side;
 
-  return offsetFactor * urgencyScalar * 0.25f;
+  return 0;//offsetFactor * urgencyScalar * 0.25f;
 }
 
 Point2D Catcher::Move(CatWorld* world) {
@@ -90,6 +91,18 @@ Point2D Catcher::Move(CatWorld* world) {
     if (debugEscape >= 1000) std::cout << "debug escape" << std::endl;
   }
 
-  //return guessed destination
-  return dest;
+  // backwards trace to generate the path
+  std::vector<Point2D> path = std::vector<Point2D>();
+  Point2D iterator = dest;
+  while (iterator != cat) {
+    path.push_back(iterator);
+    iterator = cameFrom[iterator];
+  }
+
+  //pick point on path based on distance from edge
+  float pathFraction = (float)(getMinDistanceToEdge(cat, world) - 3) / (float)side;
+  float clampedFraction = std::min(std::max(0.0f, pathFraction), 0.5f);
+
+
+  return path.at(std::floor((pathFraction * clampedFraction) * (path.size() - 1)));
 }

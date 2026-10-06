@@ -56,5 +56,5 @@ int getMinDistanceToEdge(const Point2D& pos, CatWorld* world)
     if (edges[i] < edges[min]) min = i;
   }
 
-  return min;
+  return edges[min];
 }
