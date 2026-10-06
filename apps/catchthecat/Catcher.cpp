@@ -1,39 +1,32 @@
 #include "Catcher.h"
 #include "World.h"
 
-WorldEdges getGoalEdge(const Point2D& goal, CatWorld* world)
-{ 
-  //get half size
-  auto side = world->getWorldSideSize() / 2;
-  
-  //determine which edge the given goal is on
-  if (goal.x == -1 * side) return WorldEdges::LEFT;
-  else if (goal.x == side) return WorldEdges::RIGHT;
-  else if (goal.y == -1 * side) return WorldEdges::UP;
-  else return WorldEdges::DOWN;
-}
-
 float calculateHeuristic(const Point2D& pos, CatWorld* world, float distScalar = 1.0f, float blockedScalar = 3.0f)
 {
   //get the cat's position
   auto cat = world->getCat();
   auto side = world->getWorldSideSize() / 2;
 
-  //determine the minimum distance from the cat and the pos to an edge
-  int posMin = side - std::max(std::abs(pos.x - cat.x), std::abs(pos.y - cat.y));//getMinDistanceToEdge(pos, world);
+  //determine the minimum distance from the cat to an edge, as well as an offset based on the larger dimensional difference between pos and cat
+  int maxOffsetFactor = side - std::max(std::abs(pos.x - cat.x), std::abs(pos.y - cat.y));
   int catMin = getMinDistanceToEdge(cat, world) - 1;
 
-  int distProduct = std::max(0, catMin) + std::max(0, posMin);
+  //sum the distance factors for a combined heuristic
+  int distSum = std::max(0, catMin) + std::max(0, maxOffsetFactor);
 
+  //determine how many valid, but blocked, neighbors this position has
   int blockedNeighbors = 1;
   for (Point2D it : world->neighbors(pos))
   {
+    //skip if not on the map
     if (!world->isValidPosition(it)) continue;
 
+    //increment count if the neighbor is filled
     if (world->getContent(it)) blockedNeighbors++;
   }
 
-  return ((distProduct * distScalar) + (std::pow(blockedNeighbors, 2) * blockedScalar)) * std::max(0, (catMin));
+  //run a combination of the distance factor and the number of filled neighbors, scaled by "urgency" for when the cat is too close to an edge
+  return ((distSum * distScalar) + (std::pow(blockedNeighbors, 2) * blockedScalar)) * std::max(0, (catMin));
 }
 
 Point2D Catcher::Move(CatWorld* world) {
@@ -81,7 +74,6 @@ Point2D Catcher::Move(CatWorld* world) {
 
       // calculate new cost
       newCost = std::max(0.0f, costSoFar[current] + 1.0f + calculateHeuristic(next, world));
-      //std::cout << (std::abs(costSoFar[current] - calculateHeuristic(next, world))) << std::endl;
 
       // first case, if cell has never been visited, add it to cost list
       if (!costSoFar.contains(next)) {
@@ -102,13 +94,17 @@ Point2D Catcher::Move(CatWorld* world) {
     if (debugEscape >= 1000) std::cout << "debug escape" << std::endl;
   }
 
-  // backwards trace to generate the path
+  //setup path vars
   std::vector<Point2D> path = std::vector<Point2D>();
   Point2D iterator = dest;
-  while (iterator != cat) {
+  
+  //backwards trace to generate the path
+  while (iterator != cat)
+  {
     path.push_back(iterator);
     iterator = cameFrom[iterator];
   }
 
+  //get the path goal as the space to fill
   return path.at(0);
 }
