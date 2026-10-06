@@ -1,27 +1,7 @@
 #include "Cat.h"
-#include <queue>
-#include <unordered_map>
 #include <utility>
 #include "World.h"
 #include <stdexcept>
-
-//define the queue to use
-struct WeightCell
-{
-  WeightCell(float weight, Point2D pos) { mWeight = weight; mPos = pos; }
-
-  bool operator<(const WeightCell& rhs) { return mWeight < rhs.mWeight; }
-  bool operator>(const WeightCell& rhs) { return mWeight > rhs.mWeight; }
-
-  float mWeight;
-  Point2D mPos;
-};
-
-bool operator>(const WeightCell& lhs, const WeightCell& rhs) { return lhs.mWeight > rhs.mWeight; }
-
-using DjikstraQueue = std::priority_queue<WeightCell, std::vector<WeightCell>, std::greater<WeightCell>>;
-using CameFrom = std::unordered_map<Point2D, Point2D>;
-using CostSoFar = std::unordered_map<Point2D, float>;
 
 float edgeHeuristic(const Point2D& pos, CatWorld* world)
 {

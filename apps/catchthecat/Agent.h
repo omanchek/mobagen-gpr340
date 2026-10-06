@@ -3,10 +3,28 @@
 
 #include <glm/glm.hpp>
 #include <functional>
+#include <queue>
+#include <unordered_map>
 #include <vector>
 
 // Point2D is now glm::ivec2 — same x,y interface, no OOP wrapper needed.
 using Point2D = glm::ivec2;
+
+//define the queue to use
+struct WeightCell
+{
+  WeightCell(float weight, Point2D pos) { mWeight = weight; mPos = pos; }
+
+  float mWeight;
+  Point2D mPos;
+};
+
+static bool operator>(const WeightCell& lhs, const WeightCell& rhs) { return lhs.mWeight > rhs.mWeight; }
+
+//define structures for use in algorithms
+using DjikstraQueue = std::priority_queue<WeightCell, std::vector<WeightCell>, std::greater<WeightCell>>;
+using CameFrom = std::unordered_map<Point2D, Point2D>;
+using CostSoFar = std::unordered_map<Point2D, float>;
 
 // Hash specialization so Point2D (= glm::ivec2) works in unordered containers.
 namespace std {
