@@ -35,13 +35,25 @@ float edgeHeuristic(const Point2D& pos, CatWorld* world)
   distances[2] = std::abs((-1 * size) - pos.x);
   distances[3] = std::abs((size)-pos.x);
 
+  //pick smallest edge distance
   int min = 0;
   for (int i = 1; i < 4; i++)
   {
     if (distances[i] < distances[min]) min = i;
   }
 
-  return distances[min];
+  //determine valid neighbors
+  int blockedNeighbors = 0;
+  for (Point2D it : world->neighbors(pos))
+  {
+    //don't count past edge
+    if (!world->isValidPosition(it)) continue;
+
+    if (world->getContent(it)) blockedNeighbors++;
+  }
+
+  //weight the cell based on distance to edge and how open it is
+  return distances[min] + blockedNeighbors;
 }
 
 
