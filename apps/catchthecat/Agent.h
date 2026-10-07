@@ -37,6 +37,7 @@ using CameFrom = std::unordered_map<Point2D, Point2D>;
 using CostSoFar = std::unordered_map<Point2D, float>;
 
 int getMinDistanceToEdge(const Point2D& pos, CatWorld* world);
+bool getRandomEmptyNeighbor(const Point2D& origin, CatWorld* world, Point2D& out);
 
 // Hash specialization so Point2D (= glm::ivec2) works in unordered containers.
 namespace std {

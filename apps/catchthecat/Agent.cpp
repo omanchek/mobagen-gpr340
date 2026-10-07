@@ -58,3 +58,30 @@ int getMinDistanceToEdge(const Point2D& pos, CatWorld* world)
 
   return edges[min];
 }
+
+bool getRandomEmptyNeighbor(const Point2D& origin, CatWorld* world, Point2D& out)
+{
+  //setup tracking
+  Point2D neighbors[6];
+  unsigned int numValidNeighbors = 0;
+
+  //check if each neighbor is valid to pick from
+  for (Point2D it : world->neighbors(origin))
+  {
+    //skip if out of bounds or filled
+    if (!world->isValidPosition(it)) continue;
+    if (world->getContent(it)) continue;
+
+    //otherwise, add to list and increment
+    neighbors[numValidNeighbors] = it;
+    numValidNeighbors++;
+  }
+
+  //if no neighbors were valid, fail
+  if (numValidNeighbors <= 0) return false;
+
+  //otherwise, pick a random one to return
+  unsigned int index = Random::Range(0, numValidNeighbors - 1);
+  out = neighbors[index];
+  return true;
+}
