@@ -36,13 +36,12 @@ Point2D Cat::Move(CatWorld* world)
   costSoFar.emplace(pos, 0.0f);
 
   //create interator variables for evaluation
-  unsigned int debugEscape = 0;
   Point2D current, dest = pos;
   float newCost;
   int halfSize = world->getWorldSideSize() / 2;
 
   //until no more options to evaluate
-  while (!frontier.empty() && debugEscape < 1000)
+  while (!frontier.empty())
   {
       //store current
       current = frontier.top().mPos;
@@ -80,10 +79,6 @@ Point2D Cat::Move(CatWorld* world)
           cameFrom[next] = current;
         }
       }
-
-      //debug handling to guard against infinite loops
-      debugEscape++;
-      if (debugEscape >= 1000) std::cout << "debug escape" << std::endl;
   }
 
   //compose the path
@@ -102,5 +97,6 @@ Point2D Cat::Move(CatWorld* world)
   if (path.size() <= 0) return pos;
 
   //otherwise, grab the next point on the path
+  std::cout << path[path.size() - 1].x << ", " << path[path.size() - 1].y << std::endl;
   return path[path.size() - 1];
 }

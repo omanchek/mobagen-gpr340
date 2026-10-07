@@ -45,12 +45,11 @@ Point2D Catcher::Move(CatWorld* world) {
   costSoFar.emplace(cat, 0.0f);
   
   // create interator variables for evaluation
-  unsigned int debugEscape = 0;
   Point2D current, dest = cat;
   float newCost;
 
   // until no more options to evaluate
-  while (!frontier.empty() && debugEscape < 1000) {    
+  while (!frontier.empty()) {    
     // store current
     current = frontier.top().mPos;
     frontier.pop();
@@ -88,10 +87,6 @@ Point2D Catcher::Move(CatWorld* world) {
         cameFrom[next] = current;
       }
     }
-
-    // debug handling to guard against infinite loops
-    debugEscape++;
-    if (debugEscape >= 1000) std::cout << "debug escape" << std::endl;
   }
 
   //setup path vars
@@ -106,7 +101,11 @@ Point2D Catcher::Move(CatWorld* world) {
   }
 
   //clear next invalids
-  while (frontier.size() > 0 && world->getContent(frontier.top().mPos)) frontier.pop();
+  while (frontier.size() > 0 && world->getContent(frontier.top().mPos))
+  {
+    std::cout << "cleared redundant" << std::endl;
+    frontier.pop();
+  }
 
   //get the path goal as the space to fill
   return path.at(0);
