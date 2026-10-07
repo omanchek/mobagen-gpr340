@@ -48,6 +48,10 @@ Point2D Cat::Move(CatWorld* world)
   //until no more options to evaluate
   while (!frontier.empty())
   {
+      //clear invalid options
+      while (frontier.size() > 0 && world->getContent(frontier.top().mPos)) frontier.pop();
+      if (frontier.empty()) break;
+
       //store current
       current = frontier.top().mPos;
       frontier.pop();

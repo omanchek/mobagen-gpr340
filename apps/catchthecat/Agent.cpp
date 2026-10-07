@@ -36,6 +36,26 @@ std::vector<Point2D> Agent::generatePath(CatWorld* w) {
   return vector<Point2D>();
 }
 
+unsigned int getDistanceToEdge(const WorldEdges edge, const Point2D& pos, CatWorld* world)
+{
+  int side = world->getWorldSideSize() / 2;
+
+  //pick based on edge
+  switch (edge)
+  {
+    case WorldEdges::UP:
+      return std::abs(pos.y - (-1 * side));
+    case WorldEdges::DOWN:
+      return std::abs(pos.y - side);
+    case WorldEdges::LEFT:
+      return std::abs(pos.x - (-1 * side));
+    case WorldEdges::RIGHT:
+      return std::abs(pos.x - side);
+    default:
+      return 0;
+  }
+}
+
 int getMinDistanceToEdge(const Point2D& pos, CatWorld* world)
 {
   // create an array of the edges

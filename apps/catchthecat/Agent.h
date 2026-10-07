@@ -36,6 +36,7 @@ using DjikstraQueue = std::priority_queue<WeightCell, std::vector<WeightCell>, s
 using CameFrom = std::unordered_map<Point2D, Point2D>;
 using CostSoFar = std::unordered_map<Point2D, float>;
 
+unsigned int getDistanceToEdge(const WorldEdges edge, const Point2D& pos, CatWorld* world);
 int getMinDistanceToEdge(const Point2D& pos, CatWorld* world);
 unsigned int getNumBlockedNeighbors(const Point2D& pos, CatWorld* world);
 bool getRandomEmptyNeighbor(const Point2D& origin, CatWorld* world, Point2D& out);

@@ -50,6 +50,10 @@ Point2D Catcher::Move(CatWorld* world) {
 
   // until no more options to evaluate
   while (!frontier.empty()) {    
+    // clear invalid options
+    while (frontier.size() > 0 && world->getContent(frontier.top().mPos)) frontier.pop();
+    if (frontier.empty()) break;
+
     // store current
     current = frontier.top().mPos;
     frontier.pop();
@@ -98,13 +102,6 @@ Point2D Catcher::Move(CatWorld* world) {
   {
     path.push_back(iterator);
     iterator = cameFrom[iterator];
-  }
-
-  //clear next invalids
-  while (frontier.size() > 0 && world->getContent(frontier.top().mPos))
-  {
-    std::cout << "cleared redundant" << std::endl;
-    frontier.pop();
   }
 
   //get the path goal as the space to fill
