@@ -50,7 +50,7 @@ Point2D Catcher::Move(CatWorld* world) {
   float newCost;
 
   // until no more options to evaluate
-  while (!frontier.empty() && debugEscape < 1000) {
+  while (!frontier.empty() && debugEscape < 1000) {    
     // store current
     current = frontier.top().mPos;
     frontier.pop();
@@ -104,6 +104,9 @@ Point2D Catcher::Move(CatWorld* world) {
     path.push_back(iterator);
     iterator = cameFrom[iterator];
   }
+
+  //clear next invalids
+  while (frontier.size() > 0 && world->getContent(frontier.top().mPos)) frontier.pop();
 
   //get the path goal as the space to fill
   return path.at(0);
