@@ -49,14 +49,29 @@ int getMinDistanceToEdge(const Point2D& pos, CatWorld* world)
   edges[(int)WorldEdges::LEFT] = std::abs((-1 * size) - pos.x);
   edges[(int)WorldEdges::RIGHT] = std::abs((size)-pos.x);
 
-  //find min
-  int min = 0;
-  for (int i = 0; i < EDGE_COUNT; i++)
+  //return the min
+  return std::min(
+                  std::min(edges[(int)WorldEdges::UP], edges[(int)WorldEdges::DOWN]),
+                  std::min(edges[(int)WorldEdges::UP], edges[(int)WorldEdges::DOWN])
+                 );
+}
+
+unsigned int getNumBlockedNeighbors(const Point2D& pos, CatWorld* world)
+{
+  //define counter
+  unsigned int blocked = 0;
+
+  //iterate over neighbors
+  for (Point2D it : world->neighbors(pos))
   {
-    if (edges[i] < edges[min]) min = i;
+    //don't count invalids
+    if (!world->isValidPosition(it)) continue;
+
+    //increment if filled
+    if (world->getContent(it)) blocked++;
   }
 
-  return edges[min];
+  return blocked;
 }
 
 bool getRandomEmptyNeighbor(const Point2D& origin, CatWorld* world, Point2D& out)

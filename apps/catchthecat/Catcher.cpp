@@ -108,5 +108,6 @@ Point2D Catcher::Move(CatWorld* world) {
   }
 
   //get the path goal as the space to fill
+  world->lastMove = path.at(0);
   return path.at(0);
 }

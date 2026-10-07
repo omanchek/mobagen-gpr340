@@ -5,18 +5,23 @@
 
 float edgeHeuristic(const Point2D& pos, CatWorld* world)
 {
-  //determine valid neighbors
-  int blockedNeighbors = 0;
+  //sum blocked neighbors of neighbors
+  unsigned int secondDegreeBlocked = 0;
   for (Point2D it : world->neighbors(pos))
   {
-    //don't count past edge
-    if (!world->isValidPosition(it)) continue;
+    //skip out of bounds
+    if (!world->isValidPosition(pos)) continue;
 
-    if (world->getContent(it)) blockedNeighbors++;
+    //update count
+    secondDegreeBlocked += getNumBlockedNeighbors(it, world);
   }
 
+  secondDegreeBlocked *= ((world->getWorldSideSize() / 2) - getMinDistanceToEdge(pos, world));
+
+  int componentDiff = std::max(std::abs(pos.x - world->getCat().x), std::abs(pos.y - world->getCat().y));
+
   //weight the cell based on distance to edge and how open it is
-  return getMinDistanceToEdge(pos, world) + blockedNeighbors;
+  return getMinDistanceToEdge(pos, world) + getNumBlockedNeighbors(pos, world) + 5 * (world->getWorldSideSize() - componentDiff);
 }
 
 
@@ -94,9 +99,13 @@ Point2D Cat::Move(CatWorld* world)
   }
 
   //if at goal, return the goal as point to move to
-  if (path.size() <= 0) return pos;
+  if (path.size() <= 0)
+  {
+    world->lastMove = pos;
+    return pos;
+  }
 
   //otherwise, grab the next point on the path
-  std::cout << path[path.size() - 1].x << ", " << path[path.size() - 1].y << std::endl;
+  world->lastMove = path[path.size() - 1];
   return path[path.size() - 1];
 }
