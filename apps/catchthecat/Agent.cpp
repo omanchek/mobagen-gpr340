@@ -62,6 +62,19 @@ std::vector<Point2D> Agent::generatePath(CatWorld* w) {
         path.push_back(next);
         break;
       }
+
+      //otherwise, if there are no valid paths to the end
+      else if (frontier.empty())
+      {
+        //check if can get a random neighbor to use
+        Point2D failPos = catPos;
+        if (getRandomEmptyNeighbor(catPos, w, failPos))
+        {
+          path.push_back(failPos);
+        }
+
+        return path;
+      }
     }        
   }
   
