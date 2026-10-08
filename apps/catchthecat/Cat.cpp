@@ -21,7 +21,7 @@ float edgeHeuristic(const Point2D& pos, CatWorld* world)
   int componentDiff = std::max(std::abs(pos.x - world->getCat().x), std::abs(pos.y - world->getCat().y));
 
   //weight the cell based on distance to edge and how open it is
-  return getMinDistanceToEdge(pos, world) + getNumBlockedNeighbors(pos, world) + 5 * (world->getWorldSideSize() - componentDiff);
+  return getMinDistanceToEdge(pos, world) + getNumBlockedNeighbors(pos, world) + (world->getWorldSideSize() - componentDiff);
 }
 
 float Cat::heuristic(const Point2D& pos, CatWorld* world)
