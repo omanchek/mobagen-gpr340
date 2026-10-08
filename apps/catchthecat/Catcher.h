@@ -7,6 +7,7 @@ class Catcher : public Agent {
 public:
   explicit Catcher() : Agent(){};
   Point2D Move(CatWorld*) override;
+  float heuristic(const Point2D& pos, CatWorld* world);
 };
 
 #endif  // CATCHER_H

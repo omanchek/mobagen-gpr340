@@ -29,6 +29,11 @@ float calculateHeuristic(const Point2D& pos, CatWorld* world, float distScalar =
   return ((distSum * distScalar) + (std::pow(blockedNeighbors, 2) * blockedScalar)) * std::max(0, (catMin));
 }
 
+float Catcher::heuristic(const Point2D& pos, CatWorld* world)
+{
+  return calculateHeuristic(pos, world);
+}
+
 Point2D Catcher::Move(CatWorld* world) {
   //store base vars
   auto side = world->getWorldSideSize() / 2;

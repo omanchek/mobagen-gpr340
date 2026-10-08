@@ -9,31 +9,81 @@ using namespace std;
 
 std::vector<Point2D> Agent::generatePath(CatWorld* w) {
   unordered_map<Point2D, Point2D> cameFrom;  // to build the flowfield and build the path
-  queue<Point2D> frontier;                   // to store next ones to visit
+  unordered_map<Point2D, float> costSoFar;
+  priority_queue<WeightCell, vector<WeightCell>, std::greater<WeightCell>> frontier;                   // to store next ones to visit
   unordered_set<Point2D> frontierSet;        // OPTIMIZATION to check faster if a point is in the queue
-  unordered_map<Point2D, bool> visited;      // use .at() to get data, if the element dont exist [] will give you wrong results
+  //unordered_map<Point2D, bool> visited;      // use .at() to get data, if the element dont exist [] will give you wrong results
+  unordered_set<Point2D> visitedSet;
+
+  //define path
+  vector<Point2D> path = vector<Point2D>();
 
   // bootstrap state
+  int side = w->getWorldSideSize() / 2;
   auto catPos = w->getCat();
-  frontier.push(catPos);
+  frontier.push(WeightCell(0 + heuristic(catPos, w), catPos));
   frontierSet.insert(catPos);
+  cameFrom.emplace(catPos, catPos);
+  costSoFar.emplace(catPos, 0.0f);
   Point2D borderExit = {INT32_MAX, INT32_MAX};  // sentinel: no border found yet
 
+  Point2D current;
   while (!frontier.empty()) {
     // get the current from frontier
+    current = frontier.top().mPos;
+    frontier.pop();
+
     // remove the current from frontierset
+    frontierSet.erase(current);
+
     // mark current as visited
+    visitedSet.emplace(current);
+    
     // getVisitableNeightbors(world, current) returns a vector of neighbors that are not visited, not cat, not block, not in the queue
     // iterate over the neighs:
-    // for every neighbor set the cameFrom
-    // enqueue the neighbors to frontier and frontierset
-    // do this up to find a visitable border and break the loop
-  }
+    for (Point2D next : w->neighbors(current))
+    {
+      if (!w->isValidPosition(next)) continue; //invalid check
+      if (frontierSet.contains(next)) continue; //skip if already in queue
+      if (next == catPos) continue; //ensure not cat
+      if (w->getContent(next)) continue; //blocked check
+      if (visitedSet.contains(next)) continue; //don't use visited cells
 
+      // for every neighbor set the cameFrom
+      // enqueue the neighbors to frontier and frontierset
+      cameFrom.emplace(next, current);
+      costSoFar.emplace(next, costSoFar[current] + 1);
+      frontier.push(WeightCell(costSoFar[next] + heuristic(next, w), next));
+      frontierSet.emplace(next);
+
+      // do this up to find a visitable border and break the loop
+      if (std::abs(next.x) >= side || std::abs(next.y) >= side)
+      {
+        path.push_back(next);
+        break;
+      }
+    }        
+  }
+  
   // if the border is not infinity, build the path from border to the cat using the camefrom map
   // if there isnt a reachable border, just return empty vector
   // if your vector is filled from the border to the cat, the first element is the catcher move, and the last element is the cat move
-  return vector<Point2D>();
+  if (path.size() <= 0) return path;
+
+  Point2D iterator = path.at(0), source;
+  while (iterator != catPos)
+  {
+    //get the source tile
+    source = cameFrom.at(iterator);
+    
+    //only at it to the path if not the current space
+    if (source != catPos) path.push_back(source);
+
+    //update iterator
+    iterator = source;
+  }
+  
+  return path;
 }
 
 unsigned int getDistanceToEdge(const WorldEdges edge, const Point2D& pos, CatWorld* world)

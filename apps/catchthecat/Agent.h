@@ -60,6 +60,7 @@ public:
   virtual ~Agent() = default;
 
   virtual Point2D Move(CatWorld*) = 0;
+  virtual float heuristic(const Point2D& pos, CatWorld* world) = 0;
 
   std::vector<Point2D> generatePath(CatWorld* w);
 };

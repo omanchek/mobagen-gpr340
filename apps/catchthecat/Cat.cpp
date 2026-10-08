@@ -24,15 +24,16 @@ float edgeHeuristic(const Point2D& pos, CatWorld* world)
   return getMinDistanceToEdge(pos, world) + getNumBlockedNeighbors(pos, world) + 5 * (world->getWorldSideSize() - componentDiff);
 }
 
+float Cat::heuristic(const Point2D& pos, CatWorld* world)
+{
+  return edgeHeuristic(pos, world);
+}
 
 Point2D Cat::Move(CatWorld* world)
-{
-  
-
+{    
   //store current cat position
   auto pos = world->getCat();
-  return CatWorld::NE(pos);
-  
+  /*
   //initial setup
   DjikstraQueue frontier = DjikstraQueue();
   
@@ -96,23 +97,19 @@ Point2D Cat::Move(CatWorld* world)
   //compose the path
   Point2D iterator;
   std::vector<Point2D> path = std::vector<Point2D>();
-
-  //backwards trace to generate the path
-  iterator = dest;
-  while (iterator != pos)
-  {
-    path.push_back(iterator);
-    iterator = cameFrom[iterator];
-  }
+  */
+  std::vector<Point2D> path = generatePath(world);
 
   //if at goal, return the goal as point to move to
+  Point2D move;
   if (path.size() <= 0)
   {
-    world->lastMove = pos;
-    return pos;
+    move = pos;
   }
-
-  //otherwise, grab the next point on the path
-  world->lastMove = path[path.size() - 1];
-  return path[path.size() - 1];
+  else
+  {
+    move = path.at(path.size() - 1);
+  }
+  world->lastMove = move;
+  return move;
 }
