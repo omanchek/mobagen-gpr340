@@ -27,9 +27,12 @@ float edgeHeuristic(const Point2D& pos, CatWorld* world)
 
 Point2D Cat::Move(CatWorld* world)
 {
+  
+
   //store current cat position
   auto pos = world->getCat();
-    
+  return CatWorld::NE(pos);
+  
   //initial setup
   DjikstraQueue frontier = DjikstraQueue();
   
