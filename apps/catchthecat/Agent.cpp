@@ -53,7 +53,7 @@ std::vector<Point2D> Agent::generatePath(CatWorld* w) {
       // enqueue the neighbors to frontier and frontierset
       cameFrom.emplace(next, current);
       costSoFar.emplace(next, costSoFar[current] + 1);
-      frontier.push(WeightCell(costSoFar[next] + heuristic(next, w), next));
+      frontier.push(WeightCell(costSoFar[next] + 1.0f + heuristic(next, w), next));
       frontierSet.emplace(next);
 
       // do this up to find a visitable border and break the loop
